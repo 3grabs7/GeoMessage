@@ -2,7 +2,7 @@ import './index.css'
 import * as React from 'react'
 import { useState, useEffect } from 'react'
 import ReactMapGL, { FlyToInterpolator, Marker, Popup } from 'react-map-gl'
-import { getGeoComments } from './Api'
+import { getGeoMessages, postGeoMessage } from './Api'
 const d3 = require('d3-ease')
 
 const App = () => {
@@ -13,6 +13,8 @@ const App = () => {
 	const customMapStyle = 'mapbox://styles/grabs/ckolpkpoh0kah18nygzt0sll0'
 
 	const [geoMessages, setGeoMessages] = useState([])
+	const [showPopup, setShowPopup] = useState({})
+	const [newGeoMessageForm, setNewGeoMessageForm] = useState(null)
 	const [viewport, setViewport] = useState({
 		width: '100vw',
 		height: '100vh',
@@ -20,16 +22,14 @@ const App = () => {
 		latitude: 57.70866192954713,
 		zoom: 5,
 	})
-	const [showPopup, setShowPopup] = useState({})
 
 	// when component is loaded, call api to load all messages
 	useEffect(
 		() => {
 			// uncomfortable code cause hooks don't allow async
 			;(async () => {
-				const geoMessages = await getGeoComments()
+				const geoMessages = await getGeoMessages()
 				setGeoMessages(geoMessages)
-				console.log(geoMessages)
 			})()
 		},
 		[
@@ -61,6 +61,20 @@ const App = () => {
 		})
 	}
 
+	// sets new geo messages lon / lat when map is double clicked
+	// form gets displayed
+	const showNewGeoMessageForm = (e) => {
+		setNewGeoMessageForm({
+			longitude: e.lngLat[0],
+			latitude: e.lngLat[1],
+		})
+	}
+
+	// post to api when form is submitted
+	const submitNewGeoMessage = () => {
+		postGeoMessage(newGeoMessageForm)
+	}
+
 	return (
 		<div>
 			<button onClick={goToGothenburg}>Gothenburg</button>
@@ -71,6 +85,7 @@ const App = () => {
 				mapStyle={customMapStyle}
 				mapboxApiAccessToken={mapBoxToken}
 				onViewportChange={(nextViewport) => setViewport(nextViewport)}
+				onDblClick={showNewGeoMessageForm}
 			>
 				{/* map through object from api */}
 				{geoMessages.map((msg, index) => (
@@ -122,6 +137,58 @@ const App = () => {
 						) : null}
 					</div>
 				))}
+				{/* show popup when map is double clicked
+             and lon/lat is set for 'newGeoMessageForm'*/}
+				{newGeoMessageForm ? (
+					<div>
+						<Popup
+							latitude={newGeoMessageForm.latitude}
+							longitude={newGeoMessageForm.longitude}
+							dynamicPosition={true}
+							closeButton={true}
+							closeOnClick={false}
+							tipSize={20}
+							onClose={() => setNewGeoMessageForm(null)}
+							anchor='top'
+						>
+							<div>
+								<h4>New Message</h4>
+								<div>
+									<input
+										type='text'
+										placeholder='Title'
+										onChange={(event) =>
+											setNewGeoMessageForm({
+												...newGeoMessageForm,
+												title: event.target.value,
+											})
+										}
+									/>
+									<br />
+									<input
+										type='text'
+										placeholder='Message'
+										onChange={(event) =>
+											setNewGeoMessageForm({
+												...newGeoMessageForm,
+												message: event.target.value,
+											})
+										}
+									/>
+									<br />
+									<button
+										onClick={() => {
+											submitNewGeoMessage()
+											setNewGeoMessageForm(null)
+										}}
+									>
+										Post
+									</button>
+								</div>
+							</div>
+						</Popup>
+					</div>
+				) : null}
 			</ReactMapGL>
 		</div>
 	)
