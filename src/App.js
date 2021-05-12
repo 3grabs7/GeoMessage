@@ -6,8 +6,10 @@ import { getGeoComments } from './Api'
 const d3 = require('d3-ease')
 
 const App = () => {
+	// pub token, no prob
 	const mapBoxToken =
 		'pk.eyJ1IjoiZ3JhYnMiLCJhIjoiY2tvbG83emk2MDQ1MTJuczNkY3gxNTR2dyJ9.ZcARgb7K_cpbAfje7C0OJA'
+	// create custom styles -> https://studio.mapbox.com/
 	const customMapStyle = 'mapbox://styles/grabs/ckolpkpoh0kah18nygzt0sll0'
 
 	const [geoMessages, setGeoMessages] = useState([])
@@ -20,6 +22,7 @@ const App = () => {
 	})
 	const [showPopup, setShowPopup] = useState({})
 
+	// when component is loaded, call api to load all messages
 	useEffect(
 		() => {
 			// uncomfortable code cause hooks don't allow async
@@ -34,6 +37,7 @@ const App = () => {
 		]
 	)
 
+	// methods for setting predefined map destinations
 	const goToGothenburg = () => {
 		setViewport({
 			...viewport,
@@ -45,7 +49,6 @@ const App = () => {
 			transitionEasing: d3.easeCubic,
 		})
 	}
-
 	const goToHalmstad = () => {
 		setViewport({
 			...viewport,
@@ -62,14 +65,17 @@ const App = () => {
 		<div>
 			<button onClick={goToGothenburg}>Gothenburg</button>
 			<button onClick={goToHalmstad}>Halmstad</button>
+			{/* Load map */}
 			<ReactMapGL
 				{...viewport}
 				mapStyle={customMapStyle}
 				mapboxApiAccessToken={mapBoxToken}
 				onViewportChange={(nextViewport) => setViewport(nextViewport)}
 			>
+				{/* map through object from api */}
 				{geoMessages.map((msg, index) => (
 					<div key={index}>
+						{/* create markers for each message */}
 						<Marker latitude={msg.latitude} longitude={msg.longitude}>
 							<div
 								onClick={() =>
@@ -89,26 +95,27 @@ const App = () => {
 									alt='pin'
 								/>
 							</div>
-							{/* optional display */}
-							<div style={{ color: 'white' }}>Här är en grej</div>
 						</Marker>
+						{/* create popups for each message */}
 						{showPopup[index] ? (
 							<Popup
 								latitude={msg.latitude}
 								longitude={msg.longitude}
+								dynamicPosition={true}
 								closeButton={true}
 								closeOnClick={true}
+								tipSize={20}
 								onClose={() =>
 									setShowPopup({
 										...showPopup,
 										[index]: false,
 									})
 								}
-								anchor='right'
+								anchor='top'
 							>
 								<div>
-									<h5>{msg.message.title}</h5>
-									<p>{msg.message.author}</p>
+									<h4>{msg.message.title}</h4>
+									<p>{`Author: ${msg.message.author}`}</p>
 									<p>{msg.message.body}</p>
 								</div>
 							</Popup>
