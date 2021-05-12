@@ -28,5 +28,6 @@ export async function postGeoMessage(geoMessage) {
 		redirect: 'follow',
 	}
 
-	await fetch(`${apiUrl}/Post`, requestOptions)
+	const response = await fetch(`${apiUrl}/Post`, requestOptions)
+	return await response.json()
 }

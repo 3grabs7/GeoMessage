@@ -15,6 +15,7 @@ const App = () => {
 	const [geoMessages, setGeoMessages] = useState([])
 	const [showPopup, setShowPopup] = useState({})
 	const [newGeoMessageForm, setNewGeoMessageForm] = useState(null)
+	const [processingPost, setProcessingPost] = useState(false)
 	const [viewport, setViewport] = useState({
 		width: '100vw',
 		height: '100vh',
@@ -23,19 +24,14 @@ const App = () => {
 		zoom: 5,
 	})
 
-	// when component is loaded, call api to load all messages
-	useEffect(
-		() => {
-			// uncomfortable code cause hooks don't allow async
-			;(async () => {
-				const geoMessages = await getGeoMessages()
-				setGeoMessages(geoMessages)
-			})()
-		},
-		[
-			/* Will new entry reload and update? use state goes here*/
-		]
-	)
+	// load messages
+	const loadGeoMessages = async () => {
+		const geoMessages = await getGeoMessages()
+		setGeoMessages(geoMessages)
+	}
+	useEffect(() => {
+		loadGeoMessages()
+	}, [])
 
 	// methods for setting predefined map destinations
 	const goToGothenburg = () => {
@@ -71,8 +67,8 @@ const App = () => {
 	}
 
 	// post to api when form is submitted
-	const submitNewGeoMessage = () => {
-		postGeoMessage(newGeoMessageForm)
+	const submitNewGeoMessage = async () => {
+		await postGeoMessage(newGeoMessageForm)
 	}
 
 	return (
@@ -177,12 +173,18 @@ const App = () => {
 									/>
 									<br />
 									<button
-										onClick={() => {
-											submitNewGeoMessage()
-											setNewGeoMessageForm(null)
+										disabled={processingPost}
+										onClick={async () => {
+											setProcessingPost(true)
+											await submitNewGeoMessage()
+											setTimeout(() => {
+												setNewGeoMessageForm(null)
+												setProcessingPost(false)
+												loadGeoMessages()
+											}, 1000)
 										}}
 									>
-										Post
+										{processingPost ? 'submitting...' : 'Post'}
 									</button>
 								</div>
 							</div>
