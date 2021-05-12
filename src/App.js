@@ -1,6 +1,7 @@
+import './index.css'
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import ReactMapGL, { FlyToInterpolator, Marker } from 'react-map-gl'
+import ReactMapGL, { FlyToInterpolator, Marker, Popup } from 'react-map-gl'
 import { getGeoComments } from './Api'
 const d3 = require('d3-ease')
 
@@ -17,6 +18,7 @@ const App = () => {
 		latitude: 57.70866192954713,
 		zoom: 5,
 	})
+	const [showPopup, setShowPopup] = useState({})
 
 	useEffect(
 		() => {
@@ -66,19 +68,53 @@ const App = () => {
 				mapboxApiAccessToken={mapBoxToken}
 				onViewportChange={(nextViewport) => setViewport(nextViewport)}
 			>
-				{geoMessages.map((msg, index) => {
-					return (
-						<Marker
-							key={index}
-							latitude={msg.latitude}
-							longitude={msg.longitude}
-							offsetLeft={0}
-							offsetTop={0}
-						>
-							<div>{msg.message.title}</div>
+				{geoMessages.map((msg, index) => (
+					<div key={index}>
+						<Marker latitude={msg.latitude} longitude={msg.longitude}>
+							<div
+								onClick={() =>
+									setShowPopup({
+										...showPopup,
+										[index]: true,
+									})
+								}
+							>
+								<img
+									className='pin'
+									style={{
+										width: `${4 * viewport.zoom}px`,
+										height: `${4 * viewport.zoom}px`,
+									}}
+									src='https://i.imgur.com/y0G5YTX.png'
+									alt='pin'
+								/>
+							</div>
+							{/* optional display */}
+							<div style={{ color: 'white' }}>Här är en grej</div>
 						</Marker>
-					)
-				})}
+						{showPopup[index] ? (
+							<Popup
+								latitude={msg.latitude}
+								longitude={msg.longitude}
+								closeButton={true}
+								closeOnClick={true}
+								onClose={() =>
+									setShowPopup({
+										...showPopup,
+										[index]: false,
+									})
+								}
+								anchor='right'
+							>
+								<div>
+									<h5>{msg.message.title}</h5>
+									<p>{msg.message.author}</p>
+									<p>{msg.message.body}</p>
+								</div>
+							</Popup>
+						) : null}
+					</div>
+				))}
 			</ReactMapGL>
 		</div>
 	)
