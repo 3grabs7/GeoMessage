@@ -61,6 +61,17 @@ const App = () => {
 			transitionEasing: d3.easeCubic,
 		})
 	}
+	const goToFlen = () => {
+		setViewport({
+			...viewport,
+			longitude: 16.5880924349364,
+			latitude: 59.057444226668686,
+			zoom: 11,
+			transitionDuration: 4000,
+			transitionInterpolator: new FlyToInterpolator(),
+			transitionEasing: d3.easeCubic,
+		})
+	}
 
 	// sets new geo messages lon / lat when map is double clicked
 	// form gets displayed
@@ -79,6 +90,7 @@ const App = () => {
 	return (
 		<div>
 			<button onClick={goToGothenburg}>Gothenburg</button>
+			<button onClick={goToFlen}>Flen</button>
 			<button onClick={goToHalmstad}>Halmstad</button>
 			{/* Load map */}
 			<ReactMapGL

@@ -9,6 +9,7 @@ const password = 'Passw0rd!#'
 // apikey
 const apiKey = ''
 
+// use this method for basic auth authentication
 export async function getGeoMessages() {
 	const response = await fetch(`${apiUrl}/Get`)
 	return await response.json()
@@ -36,24 +37,26 @@ export async function postGeoMessage(geoMessage) {
 	return await response.json()
 }
 
-export async function postGeoMessageWithApiKey(geoMessage) {
-	const msg = {
-		title: geoMessage.title,
-		body: geoMessage.message,
-		longitude: geoMessage.longitude,
-		latitude: geoMessage.latitude,
-	}
+// use this method for apikey authentication
+//
+// export async function postGeoMessage(geoMessage) {
+// 	const msg = {
+// 		title: geoMessage.title,
+// 		body: geoMessage.message,
+// 		longitude: geoMessage.longitude,
+// 		latitude: geoMessage.latitude,
+// 	}
 
-	const requestOptions = {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-Api-Key': apiKey,
-		},
-		body: JSON.stringify(msg),
-		redirect: 'follow',
-	}
+// 	const requestOptions = {
+// 		method: 'POST',
+// 		headers: {
+// 			'Content-Type': 'application/json',
+// 			'X-Api-Key': apiKey,
+// 		},
+// 		body: JSON.stringify(msg),
+// 		redirect: 'follow',
+// 	}
 
-	const response = await fetch(`${apiUrl}/Post`, requestOptions)
-	return await response.json()
-}
+// 	const response = await fetch(`${apiUrl}/Post`, requestOptions)
+// 	return await response.json()
+// }
