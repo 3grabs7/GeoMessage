@@ -10,7 +10,12 @@ const App = () => {
 	const mapBoxToken =
 		'pk.eyJ1IjoiZ3JhYnMiLCJhIjoiY2tvbG83emk2MDQ1MTJuczNkY3gxNTR2dyJ9.ZcARgb7K_cpbAfje7C0OJA'
 	// create custom styles -> https://studio.mapbox.com/
-	const customMapStyle = 'mapbox://styles/grabs/ckolpkpoh0kah18nygzt0sll0'
+	// presets :
+	// const styleSatellite = 'mapbox://styles/grabs/ckommc76k88h118mup70xnv06'
+	// const styleMonochrome = 'mapbox://styles/grabs/ckomm9cyk2l3d18qp3a1sqe71'
+	// const styleBasic = 'mapbox://styles/grabs/ckolpkpoh0kah18nygzt0sll0'
+	// const styleOutdoors = 'mapbox://styles/grabs/ckolpk6by1qkj17pbzg2ngyvs'
+	const customMapStyle = 'mapbox://styles/grabs/ckomm9cyk2l3d18qp3a1sqe71'
 
 	const [geoMessages, setGeoMessages] = useState([])
 	const [showPopup, setShowPopup] = useState({})
