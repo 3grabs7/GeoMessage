@@ -1,3 +1,3 @@
-# Frontend for api osv
+# React client using GeoMessage API
 
-- v2 anpassad
+- using geo message api https://github.com/3grabs7/ApiUppgiftV321 (version 2)
